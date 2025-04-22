@@ -361,3 +361,14 @@ javadoc/
 cwallet.sso.lck
 Assignment-Instruct-README.md
 !/qa_wolf_take_home_application_assignment.iml
+!/.idea/misc.xml
+
+!/.idea/modules.xml
+
+!/.idea/vcs.xml
+!/.idea/misc.xml
+
+!/.idea/modules.xml
+
+!/.idea/vcs.xml
+!/qa_wolf_take_home_application_assignment.iml
