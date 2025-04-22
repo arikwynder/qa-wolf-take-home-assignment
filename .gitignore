@@ -360,3 +360,4 @@ javadoc/
 # lock file, a part of Oracle Credential Store Framework
 cwallet.sso.lck
 Assignment-Instruct-README.md
+!/qa_wolf_take_home_application_assignment.iml
