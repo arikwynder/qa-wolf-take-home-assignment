@@ -373,4 +373,6 @@ Assignment-Instruct-README.md
 !/.idea/vcs.xml
 !/qa_wolf_take_home_application_assignment.iml
 
-.idea
+.idea!/qa_wolf_take_home_application_assignment.iml
+!/qa_wolf_take_home_application_assignment.iml
+/qa_wolf_take_home_application_assignment.iml
