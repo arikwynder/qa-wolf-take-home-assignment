@@ -376,3 +376,7 @@ Assignment-Instruct-README.md
 .idea!/qa_wolf_take_home_application_assignment.iml
 !/qa_wolf_take_home_application_assignment.iml
 /qa_wolf_take_home_application_assignment.iml
+/Assignment-Instruct-README.pdf
+/package.json
+/package-lock.json
+/node_modules/
