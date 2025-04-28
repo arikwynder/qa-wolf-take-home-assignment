@@ -1,0 +1,26 @@
+{
+  "name": "qa_wolf_take_home_application_assignment",
+  "version": "1.0.0",
+  "description": "A take-home assignment from [QA Wolf](https://www.qawolf.com)'s application\r process for [Junior Software Engineer](https://www.task-wolf.com/apply-qae).",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arikwynder/qa-wolf-take-home-assignment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arikwynder/qa-wolf-take-home-assignment/issues"
+  },
+  "homepage": "https://github.com/arikwynder/qa-wolf-take-home-assignment#readme",
+  "dependencies": {
+    "playwright": "^1.52.0"
+  }
+}
