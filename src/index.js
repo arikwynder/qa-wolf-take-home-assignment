@@ -22,26 +22,31 @@ async function sortHackerNewsArticles() {
   try {
 
     // generate array of pages to load links concurrently
-    pages = await Promise.all([
+    pages = await Promise.all(
         hackNewsUrls.map(() => context.newPage())
-    ]);
-
-    // go to Hacker News
-    await Promise.all(
-        pages.map((page,index) =>
-            page.goto(hackNewsUrls[index].url)
-                .catch(error => {
-                  console.error(`Failed to navigate to ${hackNewsUrls[index].name}
-                    (${hackNewsUrls[index].url}):`, error.message);
-                  throw error;
-                })
-        ));
+    );
 
 
-    do {
-      const rankElements = await page.locator('.rank').all();
-      const ageElements = await page.locator('.age').all();
 
+    for (const [index, page] of pages.entries()) {
+
+
+      await  page.goto(hackNewsUrls[index].url);
+
+      // Wait for the content to be available
+      await page.waitForSelector('.rank');
+      await page.waitForSelector('.age');
+
+
+      let rankElements = await page.locator('.rank').all();
+      let ageElements = await page.locator('.age').all();
+
+
+      if (hackNewsUrls[index].name === "4th page") {
+        rankElements = rankElements.slice(0, 10);
+        ageElements = ageElements.slice(0, 10);
+
+      }
 
       for (const [index, rankElement] of rankElements.entries()) {
         let rank = await rankElement.textContent();
@@ -56,13 +61,8 @@ async function sortHackerNewsArticles() {
 
       }
 
-      const moreElement = await page.waitForSelector('.morelink');
-      const moreHref = await moreElement.getAttribute('href');
 
-      const moreLink = "https://news.ycombinator.com/" + moreHref;
-      console.log(moreLink);
-
-    } while (dateMap.size < 30);
+    }
 
   } catch (error) {
     console.error('Error occurred:', error.message);
