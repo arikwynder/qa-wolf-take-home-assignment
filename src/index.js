@@ -11,6 +11,12 @@ async function sortHackerNewsArticles() {
 
   let pages;
 
+  // TO DO:
+  // refactor code to go to each page one after the other, grabbing the whole
+  // link from the more href. The while loop should check for equal or more
+  // than 100 entries in the map. If more than 100, slice the map down to
+  // 100 entries. Then continue comparison.
+
   const hackNewsUrls = [
     { url: "https://news.ycombinator.com/newest", name: '1st page' },
     { url: "https://news.ycombinator.com/newest?n=31", name: '2nd page' },
@@ -55,6 +61,8 @@ async function sortHackerNewsArticles() {
         let ageElement = ageElements[index];
         let age = await ageElement.getAttribute('title');
         let ageLength = age.indexOf(" ");
+
+
         let timestamp = Date.parse(age.substring(0, ageLength));
 
         dateMap.set(rank, timestamp);
@@ -63,6 +71,41 @@ async function sortHackerNewsArticles() {
 
 
     }
+
+    //compare timestamps
+    for (let index = 1 ; index < 100 ; index++) {
+
+      const current = dateMap.get(index+1);
+      const previous = dateMap.get(index);
+
+      console.log("Compare: " + (index+1), current + " -> " + index,previous + ".");
+
+      if (current > previous) {
+
+        const formatter = new Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        });
+
+        const currDateFormatted = formatter.format(current);
+        const prevDateFormatted = formatter.format(previous);
+
+        throw new Error("Hacker News Articles are not sorted by newest or are out of order: \n" +
+            "At Index: " + (index+1) + "\n" +
+            currDateFormatted + " is greater than " + prevDateFormatted + ":\n" +
+            current + " > " + previous + ".");
+      }
+
+
+    }
+
+    console.log("First 100 articles on Hacker News " +
+        "are sorted correctly. (Newest to Oldest)")
 
   } catch (error) {
     console.error('Error occurred:', error.message);
@@ -76,6 +119,8 @@ async function sortHackerNewsArticles() {
     }
   }
 }
+
+
 (async () => {
   await sortHackerNewsArticles();
 })();
