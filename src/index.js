@@ -1,54 +1,50 @@
 // EDIT THIS FILE TO COMPLETE ASSIGNMENT QUESTION 1
 const { chromium } = require("playwright");
+const { expect } = require("playwright/test");
 
 async function sortHackerNewsArticles() {
   // launch browser
   const browser = await chromium.launch({headless: false});
   const context = await browser.newContext();
+  const page = await context.newPage();
+
+  // prepare formatter for failure message in expect call
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
 
   // set up map of key-value pairs to hold 'rank' and 'age' -> title values.
   let dateMap = new Map();
 
-  let pages;
-
-  // TO DO:
-  // refactor code to go to each page one after the other, grabbing the whole
-  // link from the more href. The while loop should check for equal or more
-  // than 100 entries in the map. If more than 100, slice the map down to
-  // 100 entries. Then continue comparison.
-
-  const hackNewsUrls = [
-    { url: "https://news.ycombinator.com/newest", name: '1st page' },
-    { url: "https://news.ycombinator.com/newest?n=31", name: '2nd page' },
-    { url: "https://news.ycombinator.com/newest?n=61", name: '3rd page' },
-    { url: "https://news.ycombinator.com/newest?n=91", name: '4th page' }
-  ]
-
-
+  // prep try block to catch errors
   try {
 
-    // generate array of pages to load links concurrently
-    pages = await Promise.all(
-        hackNewsUrls.map(() => context.newPage())
-    );
+    let href = "https://news.ycombinator.com/newest";
 
 
+    // fill 'rank -> timestamp' map
+    while (dateMap.size < 100) {
 
-    for (const [index, page] of pages.entries()) {
-
-
-      await  page.goto(hackNewsUrls[index].url);
+      // go to hacker news (iterating pages)
+      await  page.goto(href);
 
       // Wait for the content to be available
       await page.waitForSelector('.rank');
       await page.waitForSelector('.age');
+      await page.waitForSelector('.morelink');
 
 
       let rankElements = await page.locator('.rank').all();
       let ageElements = await page.locator('.age').all();
 
 
-      if (hackNewsUrls[index].name === "4th page") {
+      if (href.includes("n=91")) {
         rankElements = rankElements.slice(0, 10);
         ageElements = ageElements.slice(0, 10);
 
@@ -69,58 +65,64 @@ async function sortHackerNewsArticles() {
 
       }
 
+      // get the next page to access and prepare for loop
+      const moreLink = await page.locator('.morelink').getAttribute('href');
+      href = "https://news.ycombinator.com/" + moreLink;
+
+
 
     }
 
-    //compare timestamps
+    //compare timestamps in 'rank -> timestamp' map
     for (let index = 1 ; index < 100 ; index++) {
 
+      // get timestamps for comparison
       const current = dateMap.get(index+1);
       const previous = dateMap.get(index);
 
-      console.log("Compare: " + (index+1), current + " -> " + index,previous + ".");
+      // prepare formatted dates for failure message, easy comparison
+      const currDateFormatted = formatter.format(current);
+      const prevDateFormatted = formatter.format(previous);
 
-      if (current > previous) {
+      // console.log("Compare: " + (index+1), current + " -> " + index,previous + ".");
 
-        const formatter = new Intl.DateTimeFormat('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false
-        });
-
-        const currDateFormatted = formatter.format(current);
-        const prevDateFormatted = formatter.format(previous);
-
-        throw new Error("Hacker News Articles are not sorted by newest or are out of order: \n" +
+      // expect the current timestamp to be older (less) than previous timestamp
+      // log current testing info if failed
+      await expect(
+            current < previous,
+            "[FAIL] Hacker News Articles are not sorted " +
+            "by newest or are out of order: \n" +
             "At Index: " + (index+1) + "\n" +
             currDateFormatted + " is greater than " + prevDateFormatted + ":\n" +
-            current + " > " + previous + ".");
-      }
-
+            current + " > " + previous + "."
+      ).toBeTruthy;
 
     }
 
-    console.log("First 100 articles on Hacker News " +
-        "are sorted correctly. (Newest to Oldest)")
+    // Print success message: got through for loop without failed expectations
+    console.log('\x1b[36m%s\x1b[0m',"[SUCCESS] First 100 " +
+        "articles on Hacker News are sorted correctly. " +
+        "(Newest to Oldest)");
 
   } catch (error) {
-    console.error('Error occurred:', error.message);
-
+    console.error('[ERROR] ', error.message);
   } finally {
+
     try {
-      // close browser, cleans up top-down
+
+      // clean up memory
+      await page.close();
+      await context.close();
       await browser.close();
+
     } catch(error) {
-      console.error('Error while closing browser:', error.message);
+      console.error('[ERROR] While closing browser: ', error.message);
     }
+
   }
 }
 
-
+// main method call
 (async () => {
   await sortHackerNewsArticles();
 })();
