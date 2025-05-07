@@ -1,6 +1,6 @@
 # QA Wolf Job Application Assignment
 
-#### Author: Ari Wynder
+#### Author: Ari Kai Wynder
 
 A take-home assignment from [QA Wolf](https://www.qawolf.com)'s application
 process for [Junior Software Engineer](https://www.task-wolf.com/apply-qae).
