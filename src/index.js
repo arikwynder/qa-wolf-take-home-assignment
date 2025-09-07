@@ -40,6 +40,7 @@ async function sortHackerNewsArticles() {
   // hold 'rank' and 'age' -> title values.
   let dateMap = new Map();
 
+
   // prep try block to catch errors
   try {
 
@@ -101,12 +102,13 @@ async function sortHackerNewsArticles() {
 
     }
 
-    //compare timestamps in 'rank -> timestamp' map
-    for (let index = 1 ; index < 100 ; index++) {
+    // compare timestamps in 'rank -> timestamp' map
+    // start from index=1 to get rank value
+    for (let index = 2 ; index <= 100 ; index++) {
 
       // get timestamps for comparison
-      const current = dateMap.get(index+1);
-      const previous = dateMap.get(index);
+      const current = dateMap.get(index);
+      const previous = dateMap.get(index-1);
 
       // prepare formatted dates for failure message, easy comparison
       const currDateFormatted = formatter.format(current);
